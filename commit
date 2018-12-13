@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# .travis.yml ---> COMMIT_EDITMSG
+if [ -d .git ]; then
+	if [[ "$(pwd)" != "/home/$USER/scripts" ]]; then
+		find . -type f -exec file --mime-type {} \; | grep -E "x-executable|octet-stream" | cut -d \: -f 1 | while read file; do
+			git rm -rf "$file" 2>/dev/null || rm -rf "$file"
+		done
+	fi
+	if [ -d tmp ] ; then
+  	rm -rf tmp/*
+  fi
+	find . -type d -name '__pycache__' -exec git rm -rf {} \; 2>/dev/null
+	git add *
+	read -p "Message: " message
+	git commit -m "$message"
+	git push origin master
+else
+	echo "Not a git dir"
+fi
